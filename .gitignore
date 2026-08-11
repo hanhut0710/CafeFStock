@@ -4,3 +4,4 @@ frontend/node_modules
 __pycache__
 /.agents
 /docs
+backend/venv

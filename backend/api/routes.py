@@ -1,32 +1,63 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
 
 from database import get_db
-from schemas import StockDashboardResponse, CompanySchema, CompanyListResponse
+from schemas import (
+    StockDashboardResponse,
+    CompanyListResponse,
+)
 import services.stock_service as stock_service
+
 
 router = APIRouter(prefix="/api")
 
-@router.get("/companies", response_model=CompanyListResponse)
-def get_companies(db: Session = Depends(get_db)):
-    """Retrieves list of tracked companies."""
+
+@router.get(
+    "/companies",
+    response_model=CompanyListResponse,
+)
+def get_companies(
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieve all companies available in SQLite.
+    """
+
     companies = stock_service.list_companies(db)
-    return CompanyListResponse(companies=companies)
+
+    return CompanyListResponse(
+        companies=companies
+    )
 
 
 @router.get("/stocks/{symbol}", response_model=StockDashboardResponse)
 def get_stock_data(
-    symbol: str, 
-    force_refresh: bool = Query(False, description="Set true to force refetching from CafeF"),
+    symbol: str,
+    force_refresh: bool = Query(
+        False,
+        description="Set true to force refetching from CafeF"
+    ),
     db: Session = Depends(get_db)
 ):
     """Retrieves stock dashboard metrics and historical price data for a symbol."""
-    return stock_service.get_stock_dashboard(db, symbol=symbol, force_refresh=force_refresh)
 
+    try:
+        print("🚨🚨 GET STOCK DASHBOARD CALLED")
 
-@router.post("/companies/{symbol}", response_model=CompanySchema)
-def add_new_company(symbol: str, db: Session = Depends(get_db)):
-    """Tracks a new company by symbol."""
-    company = stock_service.get_or_create_company(db, symbol)
-    return CompanySchema.model_validate(company)
+        result = stock_service.get_stock_dashboard(
+            db,
+            symbol=symbol,
+            force_refresh=force_refresh
+        )
+
+        print("✅ GET STOCK DASHBOARD SUCCESS")
+        return result
+
+    except Exception as e:
+        import traceback
+
+        print("💥💥 STOCK DASHBOARD ERROR")
+        print("ERROR:", repr(e))
+        traceback.print_exc()
+
+        raise
