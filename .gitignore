@@ -1,0 +1,6 @@
+frontend/node_modules
+.env
+.env.production
+__pycache__
+/.agents
+/docs
