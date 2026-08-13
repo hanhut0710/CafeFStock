@@ -3,7 +3,7 @@
   --bg-secondary: #1a1d28;
   --bg-card: #222634;
   --bg-hover: #2b3042;
-  
+
   --border-color: #2e3446;
   --border-active: #3b82f6;
 
@@ -19,7 +19,7 @@
   --accent-blue: #3b82f6;
   --accent-yellow: #f59e0b;
   --accent-yellow-bg: rgba(245, 158, 11, 0.12);
-  
+
   --sidebar-width: 280px;
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Outfit', 'Inter', sans-serif;
@@ -46,13 +46,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-dim);
 }
@@ -404,5 +407,99 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.stock-table-card {
+  margin-top: 20px;
+  background: #191c27;
+  border: 1px solid #2d3345;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stock-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid #2d3345;
+}
+
+.stock-table-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f7fa;
+}
+
+.stock-table-header span {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #7f8aa3;
+}
+
+.stock-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.stock-table th {
+  padding: 13px 20px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 500;
+  color: #7f8aa3;
+  background: #161923;
+  border-bottom: 1px solid #2d3345;
+  white-space: nowrap;
+}
+
+.stock-table th:first-child {
+  text-align: left;
+}
+
+.stock-table td {
+  padding: 14px 20px;
+  text-align: right;
+  font-size: 13px;
+  color: #d9deea;
+  border-bottom: 1px solid #252a38;
+}
+
+.stock-table td:first-child {
+  text-align: left;
+  color: #9da7bb;
+}
+
+.stock-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.stock-table tbody tr:hover {
+  background: #202432;
+}
+
+.stock-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.stock-table .close-price {
+  color: #f5f7fa;
+  font-weight: 600;
+}
+
+.empty-table {
+  text-align: center !important;
+  padding: 30px !important;
+  color: #7f8aa3 !important;
 }

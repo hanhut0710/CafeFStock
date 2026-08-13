@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from models import Company, StockPrice
 from schemas import (
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 REFRESH_INTERVAL = timedelta(hours=1)
-
+INITIAL_START_DATE = date(2026, 7, 1)
 
 def get_or_create_company(
     db: Session,
@@ -117,10 +118,16 @@ def is_data_stale(
 
     return False
 
+def get_latest_trading_date(db: Session):
+    result = (
+        db.query(func.max(StockPrice.trading_date))
+        .scalar()
+    )
+
+    return result.date() if result else None
 
 def refresh_cafef_data(
     db: Session,
-    target_date: date,
 ) -> dict:
     """
     Download and import CafeF data for all exchanges.
@@ -137,27 +144,58 @@ def refresh_cafef_data(
     #     "Starting CafeF refresh for %s",
     #     target_date,
     # )
-    print(f"🔥 STARTING CAFEF REFRESH: {target_date}")
-    records = fetch_cafef_daily_data(
-        target_date=target_date,
-    )
 
-    if not records:
-        raise ValueError(
-            f"CafeF returned no data for {target_date}"
+    lastest_date = get_latest_trading_date(db)
+
+    if lastest_date is None:
+        lastest_date = INITIAL_START_DATE
+
+    today = date.today()
+
+    while lastest_date <= today:
+        print(f"🔥 STARTING CAFEF REFRESH: {lastest_date}")
+        records = fetch_cafef_daily_data(
+            target_date=lastest_date,
         )
 
-    result = import_stock_records(
-        db=db,
-        records=records,
-    )
+        if not records:
+            raise ValueError(
+                f"CafeF returned no data for {lastest_date}"
+            )
 
-    # logger.info(
-    #     "CafeF refresh completed: %s",
-    #     result,
+        result = import_stock_records(
+            db=db,
+            records=records,
+        )
+
+        # logger.info(
+        #     "CafeF refresh completed: %s",
+        #     result,
+        # )
+        print(f"✅ CAFEF REFRESH COMPLETED: {result}")
+
+        lastest_date += timedelta(days=1)
+    # print(f"🔥 STARTING CAFEF REFRESH: {target_date}")
+    # records = fetch_cafef_daily_data(
+    #     target_date=target_date,
     # )
-    print(f"✅ CAFEF REFRESH COMPLETED: {result}")
-    return result
+
+    # if not records:
+    #     raise ValueError(
+    #         f"CafeF returned no data for {target_date}"
+    #     )
+
+    # result = import_stock_records(
+    #     db=db,
+    #     records=records,
+    # )
+
+    # # logger.info(
+    # #     "CafeF refresh completed: %s",
+    # #     result,
+    # # )
+    # print(f"✅ CAFEF REFRESH COMPLETED: {result}")
+    # return result
 
 
 def get_stock_dashboard(
@@ -243,7 +281,6 @@ def get_stock_dashboard(
         try:
             refresh_cafef_data(
                 db=db,
-                target_date=date.today(),
             )
 
             print("✅ CAFEF REFRESH COMPLETED")
@@ -384,3 +421,4 @@ def list_companies(
         CompanySchema.model_validate(company)
         for company in companies
     ]
+

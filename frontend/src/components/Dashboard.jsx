@@ -2,6 +2,7 @@ import React from 'react';
 import StatusBanner from './StatusBanner';
 import KeyMetrics from './KeyMetrics';
 import StockChart from './StockChart';
+import StockTable from './StockTable';
 import { AlertCircle } from 'lucide-react';
 
 export default function Dashboard({ stockData, isLoading, error, showVolume, showSMA }) {
@@ -58,6 +59,8 @@ export default function Dashboard({ stockData, isLoading, error, showVolume, sho
         showVolume={showVolume}
         showSMA={showSMA}
       />
+      {/* Stock Table */}
+      <StockTable history={stockData.history} />
     </main>
   );
 }
