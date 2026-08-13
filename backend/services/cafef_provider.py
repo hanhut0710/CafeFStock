@@ -18,16 +18,16 @@ DATA_ROOT = PROJECT_ROOT / "data" / "cafef"
 
 
 def fetch_cafef_daily_data(
-    # target_date: date,
+    target_date: date,
 ) -> List[Dict[str, Any]]:
 
     logger.info(
         "Fetching CafeF daily data for %s",
-        # target_date,
+        target_date,
     )
 
     data_directory = download_and_extract_cafef(
-        # target_date=target_date,
+        target_date=target_date,
         data_root=DATA_ROOT,
     )
 
@@ -38,7 +38,7 @@ def fetch_cafef_daily_data(
     logger.info(
         "Fetched %s CafeF records for %s",
         len(records),
-        # target_date,
+        target_date,
     )
 
     return records
